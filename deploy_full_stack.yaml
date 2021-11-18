@@ -1,0 +1,40 @@
+# This sample sets up a an Elasticsearch cluster along with a Kibana instance
+# and an APM server, configured to be able to communicate with each other
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch-sample
+spec:
+  version: 7.15.2
+  nodeSets:
+  - name: default
+    config:
+      node.store.allow_mmap: false
+    count: 1
+    podTemplate:
+      spec:
+        containers:
+          - name: elasticsearch
+            resources:
+              limits:
+                memory: 2Gi  
+---
+apiVersion: apm.k8s.elastic.co/v1
+kind: ApmServer
+metadata:
+  name: apm-server-sample
+spec:
+  version: 7.15.2
+  count: 1
+  elasticsearchRef:
+    name: "elasticsearch-sample"
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana-sample
+spec:
+  version: 7.15.2
+  count: 1
+  elasticsearchRef:
+    name: "elasticsearch-sample"
