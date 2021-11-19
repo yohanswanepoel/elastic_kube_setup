@@ -9,11 +9,12 @@ https://operatorhub.io/operator/elastic-cloud-eck#:~:text=Elastic%20Cloud%20on%2
 # install the stack and expose kibana port
 python3 install-stack.py
 
+# setup agents
+python3 setup-agents.py
+
 # once running get access to Kibana
 python3 access-kibana.py
 
-# setup agents
-python3 setup-agents.py
 ```
 
 ## Install the CRD
@@ -65,7 +66,15 @@ echo `kubectl get secret elasticsearch-sample-es-elastic-user -o=jsonpath='{.dat
 
 ## Install some beats
 
+### Install Kube State Metrics to expose metrics in an easy to consume way
+https://github.com/kubernetes/kube-state-metrics
+```bash
+git clone https://github.com/kubernetes/kube-state-metrics.git kube-state-metrics 
+kubectl create -f kube-state-metrics/examples/standard
+rm -rf kube-state-metrics
+```
 
+### Now let's setup the beats
 ```bash
     # Heartbeat specifically for Elastic
     kubectl apply -f hearbeat.yaml -n elk

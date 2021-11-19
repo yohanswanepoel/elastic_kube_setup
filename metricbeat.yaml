@@ -62,6 +62,26 @@ spec:
         - volume
         add_metadata: true
         
+      - module: kubernetes
+        enabled: true
+        metricsets:
+          - state_node
+          - state_daemonset
+          - state_deployment
+          - state_replicaset
+          - state_statefulset
+          - state_pod
+          - state_container
+          - state_job
+          - state_cronjob
+          - state_resourcequota
+          - state_service
+          - state_persistentvolume
+          - state_persistentvolumeclaim
+          - state_storageclass
+          # Uncomment this to get k8s events:
+          #- event  period: 10s
+        hosts: ["kube-state-metrics.kube-system.svc:8080"]
 
     processors:
     - add_cloud_metadata: {}
@@ -121,6 +141,7 @@ rules:
   - namespaces
   - events
   - pods
+  - services
   verbs:
   - get
   - list
