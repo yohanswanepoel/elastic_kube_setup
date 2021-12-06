@@ -18,6 +18,12 @@ spec:
             enabled: "true"
           host: ${NODE_NAME}
           type: kubernetes
+          templates:
+            - condition:
+                contains:
+                  kubernetes.container.image: "mongodb"
+                config:
+                  - module: mongodb
       modules:
       - module: system
         period: 10s

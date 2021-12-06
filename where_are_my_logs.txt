@@ -1,0 +1,12 @@
+GET filebeat*/_search
+{
+  "size": 0,
+  "aggs": {
+    "filepart": {
+      "terms": {
+        "field": "log.file.path",
+        "size": 1500
+      }
+    }
+  }
+}

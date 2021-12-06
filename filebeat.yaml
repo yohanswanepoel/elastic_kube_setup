@@ -14,16 +14,36 @@ spec:
       autodiscover:
         providers:
         - type: kubernetes
+          host: ${NODE_NAME}
           node: ${NODE_NAME}
-          hints:
-            enabled: true
-            default_config:
-              type: container
-              paths:
-              - /var/log/containers/*${data.kubernetes.container.id}.log
+        #Default config
+          hints.enabled: true
+          hints.default_config:
+          templates:
+            #pegaConfig
+            - condition:
+                contains:
+                  kubernetes.labels.appName: pega
+              config:
+                  - type: container
+                    paths:
+                      - /var/log/containers/${data.kubernetes.container.id}/*.log
+            #mongoDBConfig
+            - condition:
+                contains:
+                  kubernetes.container.image: mongo
+              config:
+                - module: mongodb
+                  log: 
+                    input:
+                      type: container
+                      paths: 
+                        #- /var/lib/docker/containers/${data.kubernetes.container.id}/*${data.kubernetes.container.id}*.log
+                        - /var/log/containers/*${data.kubernetes.container.id}.log
     processors:
     - add_cloud_metadata: {}
     - add_host_metadata: {}
+    - add_kubernetes_metadata: {}
   daemonSet:
     podTemplate:
       spec:
