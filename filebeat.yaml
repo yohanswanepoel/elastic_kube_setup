@@ -13,37 +13,36 @@ spec:
     filebeat:
       autodiscover:
         providers:
-        - type: kubernetes
-          host: ${NODE_NAME}
-          node: ${NODE_NAME}
-        #Default config
-          hints.enabled: true
-          hints.default_config:
-          templates:
-            #pegaConfig
-            - condition:
-                contains:
-                  kubernetes.labels.appName: pega
-              config:
+          - type: kubernetes
+            host: ${NODE_NAME}
+            node: ${NODE_NAME}
+            #Default config
+            hints.enabled: true
+            hints.default_config:
+            templates:
+              #pegaConfig
+              - condition:
+                  contains:
+                    kubernetes.labels.appName: pega
+                config:
                   - type: container
                     paths:
                       - /var/log/containers/${data.kubernetes.container.id}/*.log
-            #mongoDBConfig
-            - condition:
-                contains:
-                  kubernetes.container.image: mongo
-              config:
-                - module: mongodb
-                  log: 
-                    input:
-                      type: container
-                      paths: 
-                        #- /var/lib/docker/containers/${data.kubernetes.container.id}/*${data.kubernetes.container.id}*.log
-                        - /var/log/containers/*${data.kubernetes.container.id}.log
+              #mongoDBConfig
+              - condition:
+                  contains:
+                    kubernetes.container.image: mongo
+                config:
+                  - module: mongodb
+                    log:
+                      input:
+                        type: container
+                        paths:
+                          - /var/log/containers/*${data.kubernetes.container.id}.log
     processors:
-    - add_cloud_metadata: {}
-    - add_host_metadata: {}
-    - add_kubernetes_metadata: {}
+      - add_cloud_metadata: {}
+      - add_host_metadata: {}
+      - add_kubernetes_metadata: {}
   daemonSet:
     podTemplate:
       spec:
@@ -53,48 +52,48 @@ spec:
         dnsPolicy: ClusterFirstWithHostNet
         hostNetwork: true # Allows to provide richer host metadata
         containers:
-        - name: filebeat
-          securityContext:
-            runAsUser: 0
-            # If using Red Hat OpenShift uncomment this:
-            #privileged: true
-          volumeMounts:
-          - name: varlogcontainers
-            mountPath: /var/log/containers
-          - name: varlogpods
-            mountPath: /var/log/pods
-          - name: varlibdockercontainers
-            mountPath: /var/lib/docker/containers
-          env:
-            - name: NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
+          - name: filebeat
+            securityContext:
+              runAsUser: 0
+              # If using Red Hat OpenShift uncomment this:
+              #privileged: true
+            volumeMounts:
+              - name: varlogcontainers
+                mountPath: /var/log/containers
+              - name: varlogpods
+                mountPath: /var/log/pods
+              - name: varlibdockercontainers
+                mountPath: /var/lib/docker/containers
+            env:
+              - name: NODE_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
         volumes:
-        - name: varlogcontainers
-          hostPath:
-            path: /var/log/containers
-        - name: varlogpods
-          hostPath:
-            path: /var/log/pods
-        - name: varlibdockercontainers
-          hostPath:
-            path: /var/lib/docker/containers
+          - name: varlogcontainers
+            hostPath:
+              path: /var/log/containers
+          - name: varlogpods
+            hostPath:
+              path: /var/log/pods
+          - name: varlibdockercontainers
+            hostPath:
+              path: /var/lib/docker/containers
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: filebeat
 rules:
-- apiGroups: [""] # "" indicates the core API group
-  resources:
-  - namespaces
-  - pods
-  - nodes
-  verbs:
-  - get
-  - watch
-  - list
+  - apiGroups: [""] # "" indicates the core API group
+    resources:
+      - namespaces
+      - pods
+      - nodes
+    verbs:
+      - get
+      - watch
+      - list
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -107,9 +106,9 @@ kind: ClusterRoleBinding
 metadata:
   name: filebeat
 subjects:
-- kind: ServiceAccount
-  name: filebeat
-  namespace: elk
+  - kind: ServiceAccount
+    name: filebeat
+    namespace: elk
 roleRef:
   kind: ClusterRole
   name: filebeat
