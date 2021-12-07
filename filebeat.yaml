@@ -39,6 +39,16 @@ spec:
                         type: container
                         paths:
                           - /var/log/containers/*${data.kubernetes.container.id}.log
+              - condition:
+                  contains:
+                    kubernetes.container.image: postgresql
+                config:
+                  - module: postgresql
+                    log:
+                      input:
+                        type: container
+                        paths:
+                          - /var/log/containers/*${data.kubernetes.container.id}.log
     processors:
       - add_cloud_metadata: {}
       - add_host_metadata: {}
