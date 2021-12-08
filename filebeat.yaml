@@ -4,7 +4,7 @@ metadata:
   name: filebeat
 spec:
   type: filebeat
-  version: 7.15.2
+  version: 7.16.0
   elasticsearchRef:
     name: elasticsearch-sample
   kibanaRef:
@@ -19,7 +19,21 @@ spec:
             #Default config
             hints.enabled: true
             hints.default_config:
+              type: container
+              paths:
+              - /var/log/containers/*-${data.container.id}.log
             templates:
+              #ingressNgnix
+              - condition:
+                  contains:
+                    kubernetes.labels.app_kubernetes_io/name : ingress-nginx
+                config:
+                  - module: nginx
+                    log:
+                      input:
+                        type: container
+                        paths:
+                          - /var/log/containers/*${data.kubernetes.container.id}.log
               #pegaConfig
               - condition:
                   contains:
@@ -29,6 +43,16 @@ spec:
                     paths:
                       - /var/log/containers/${data.kubernetes.container.id}/*.log
               #mongoDBConfig
+              #- condition:
+              #    contains:
+              #      kubernetes.container.image: simple
+              #  config:
+              #    input:
+              #      type: container
+              #      paths:
+              #        - /var/lib/containers/storage/overlay/{data.kubernetes.container.id}/merged/app/*.log
+              #        - /var/lib/containers/storage/overlay/*/merged/app/simple.log
+              #        - /var/log/containers/*${data.kubernetes.container.id}.log
               - condition:
                   contains:
                     kubernetes.container.image: mongo
