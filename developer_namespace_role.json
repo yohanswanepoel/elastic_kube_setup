@@ -1,0 +1,35 @@
+POST _security/role/developer_kubernetes
+{
+    "cluster" : [
+      "all"
+    ],
+    "indices" : [
+      {
+        "names" : [
+          "filebeat-*",
+          "metricbeat-*"
+        ],
+        "privileges" : [
+          "all"
+        ],
+        "query": "{\"match\": {\"kubernetes.namespace\": \"development\"}}",
+        "allow_restricted_indices" : false
+      }
+    ],
+    "applications" : [
+      {
+        "application" : "kibana-.kibana",
+        "privileges" : [
+          "all"
+        ],
+        "resources" : [
+          "*"
+        ]
+      }
+    ],
+    "run_as" : [ ],
+    "metadata" : { },
+    "transient_metadata" : {
+      "enabled" : true
+    }
+}
