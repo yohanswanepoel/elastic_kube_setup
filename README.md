@@ -12,6 +12,9 @@ python3 install-stack.py
 # setup agents
 python3 setup-agents.py
 
+# deploy workload - to see some metrics/logs
+pythyn3 deploy-workload.py
+
 # once running get access to Kibana
 python3 access-kibana.py
 
@@ -86,3 +89,39 @@ See some details on how your operator is doing
 ```bash
 kubectl describe beats/filebeat 
 ```
+
+## APM Example with JVM metrics and logs
+
+Based on blog from Eyal Koren - https://www.elastic.co/blog/using-elastic-apm-java-agent-on-kubernetes-k8s
+
+Setup application namespace
+* Create namespace
+* Create secret in the application namespace 
+```bash
+
+   kubectl create namespace development
+
+  kubectl get secret apm-server-sample-apm-token -n elk -o json | jq --sort-keys \
+            'del(
+              .metadata.annotations."kubectl.kubernetes.io/last-applied-configuration",
+              .metadata.annotations."control-plane.alpha.kubernetes.io/leader",
+              .metadata.uid,
+              .metadata.selfLink,
+              .metadata.resourceVersion,
+              .metadata.creationTimestamp,
+              .metadata.generation,
+              .metadata.namespace,
+              .metadata.labels
+          )' | kubectl apply --namespace=development -f -
+```
+
+Apply applications with APM enabled - using Petclinic
+* Uses init container and connectivity to APM server
+```bash
+ kubectl apply -f petclinic_with_apm.yaml
+
+```
+
+
+
+
