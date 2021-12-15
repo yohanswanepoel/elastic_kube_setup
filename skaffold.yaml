@@ -1,0 +1,8 @@
+apiVersion: skaffold/v2beta4
+kind: Config
+metadata:
+  name: monitor-k8s
+deploy:
+  kubectl:
+    manifests:
+    - *.yaml

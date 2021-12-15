@@ -3,7 +3,7 @@ import sys
 import platform
 
 OPERATOR_VERSION="1.8.0"
-ELASTIC_VERSION="7.15.2"
+ELASTIC_VERSION="7.16.1"
 
 # Do we need to clean up first
 

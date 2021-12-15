@@ -119,7 +119,12 @@ Apply applications with APM enabled - using Petclinic
 * Uses init container and connectivity to APM server
 ```bash
  kubectl apply -f petclinic_with_apm.yaml
+ kubectl apply -f petclinic_service.yaml
+```
 
+Get service
+```bash
+minikube service petclinic -n development --url
 ```
 
 

@@ -11,7 +11,7 @@ os.system("kubectl create namespace development")
 ################################################################
 os.system("kubectl apply -f mongo_db/mongo_secret.yaml -n development")
 os.system("kubectl apply -f mongo_db/mongo_service.yaml -n development")
-os.system("kubectl apply -f mongo_db/mongo_mongo.yaml -n development")
+os.system("kubectl apply -f mongo_db/mongo.yaml -n development")
 
 ##################################################################
 #  Deploy Java Application - shows nice metrics/logs and APM data
@@ -34,3 +34,5 @@ os.system("""kubectl get secret apm-server-sample-apm-token -n elk -o json | jq 
 
 # Deploy application
 os.system("kubectl apply -f java_app/petclinic_with_apm.yaml -n development")
+os.system("kubectl apply -f petclinic_service.yaml -n development")
+os.system("minikube service petclinic -n development --url")
