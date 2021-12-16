@@ -118,8 +118,8 @@ Setup application namespace
 Apply applications with APM enabled - using Petclinic
 * Uses init container and connectivity to APM server
 ```bash
- kubectl apply -f petclinic_with_apm.yaml
- kubectl apply -f petclinic_service.yaml
+ kubectl apply -f petclinic_with_apm.yaml -n development
+ kubectl apply -f petclinic_service.yaml -n development
 ```
 
 Get service
@@ -129,4 +129,12 @@ minikube service petclinic -n development --url
 
 
 
+# TODO
 
+* Replace version with environment variable and then use this script to replace
+```bash
+# set $ESVERSION in file
+
+export ESVERSION=my-test-nginx
+envsubst '$ESVERSION' < deployment.yaml | kubectl apply -f -
+```
