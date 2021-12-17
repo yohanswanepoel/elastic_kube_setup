@@ -135,6 +135,5 @@ minikube service petclinic -n development --url
 ```bash
 # set $ESVERSION in file
 
-export ESVERSION=my-test-nginx
-envsubst '$ESVERSION' < deployment.yaml | kubectl apply -f -
+envsubst '$ELASTIC' < deployment.yaml | kubectl apply -f -
 ```

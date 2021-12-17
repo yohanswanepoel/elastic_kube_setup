@@ -4,7 +4,7 @@ metadata:
   name: filebeat
 spec:
   type: filebeat
-  version: 7.16.1
+  version: $ELASTIC
   elasticsearchRef:
     name: elasticsearch-sample
   kibanaRef:

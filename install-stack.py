@@ -1,21 +1,24 @@
 import os
 import sys
 import platform
+import config
 
-OPERATOR_VERSION="1.8.0"
-ELASTIC_VERSION="7.16.1"
+
+print ("Operator Version: {}".format(config.version['OPERATOR']))
+print ("Elastic Version: {}".format(config.version['ELASTIC']))
+
+os.environ['ELASTIC'] = config.version['ELASTIC']
 
 # Do we need to clean up first
-
 os.system("kubectl create namespace elk")
 os.system("kubectl config set-context --current --namespace=elk")
 
 # Install the operator
-os.system("kubectl create -f https://download.elastic.co/downloads/eck/{}/crds.yaml".format(OPERATOR_VERSION))
-os.system("kubectl apply -f https://download.elastic.co/downloads/eck/{}/operator.yaml".format(OPERATOR_VERSION))
+os.system("kubectl create -f https://download.elastic.co/downloads/eck/{}/crds.yaml".format(config.version['OPERATOR']))
+os.system("kubectl apply -f https://download.elastic.co/downloads/eck/{}/operator.yaml".format(config.version['OPERATOR']))
 
 # Install Elastic Stack - Search, Kibana, APM
-os.system("kubectl apply -f deploy_full_stack.yaml -n elk")
+os.system("envsubst '$ELASTIC' < deploy_full_stack.yaml | kubectl apply -f - -n elk")
 
 
 
