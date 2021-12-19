@@ -24,7 +24,7 @@ spec:
         emptyDir: {} 
       initContainers: 
       - name: elastic-java-agent 
-        image: docker.elastic.co/observability/apm-agent-java:1.12.0 
+        image: docker.elastic.co/observability/apm-agent-java:$APM_JAVA 
         volumeMounts: 
         - mountPath: /elastic/apm/agent 
           name: elastic-apm-agent 

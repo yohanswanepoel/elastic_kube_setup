@@ -3,7 +3,8 @@
 https://operatorhub.io/operator/elastic-cloud-eck#:~:text=Elastic%20Cloud%20on%20Kubernetes%20(ECK,Elastic%20Maps%20Server%20on%20Kubernetes.
 
 
-* Follow this read me or run
+* Follow this read me or run the pythong commands
+* use the config.py command to setup the environment variables
 * Resources are setup in the *elk* namespace, to make it easy to clean things up.
 ```
 # install the stack and expose kibana port
@@ -21,11 +22,12 @@ python3 access-kibana.py
 ```
 
 ## Install the CRD
+* NB if you choose this path you have to set the environment variables as per the config.py file
 
-You might want to look for later versions
+You might want to look for the current version - see config.py
 ```bash
-kubectl create -f https://download.elastic.co/downloads/eck/1.8.0/crds.yaml
-kubectl apply -f https://download.elastic.co/downloads/eck/1.8.0/operator.yaml
+kubectl create -f https://download.elastic.co/downloads/eck/1.9.0/crds.yaml
+kubectl apply -f https://download.elastic.co/downloads/eck/1.9.0/operator.yaml
 ```
 
 See the operator logs
@@ -47,7 +49,7 @@ kubectl create namespace elk
 
 kubectl config set-context --current --namespace=elk
 
-kubectl apply -f deploy_full_stack.yaml
+envsubst '$ELASTIC' < deploy_full_stack.yaml | kubectl apply -f - -n elk
 ```
 
 Check the status
@@ -80,9 +82,9 @@ rm -rf kube-state-metrics
 ### Now let's setup the beats
 ```bash
     # Heartbeat specifically for Elastic
-    kubectl apply -f hearbeat.yaml -n elk
-    kubectl apply -f filebeat.yaml -n elk
-    kubectl apply -f metricbeat.yaml -n elk
+    envsubst '$ELASTIC' < hearbeat.yaml | kubectl apply -f - -n elk
+    envsubst '$ELASTIC' < filebeat.yaml | kubectl apply -f - -n elk
+    envsubst '$ELASTIC' < metricbeat.yaml | kubectl apply -f - -n elk
 ```
 
 See some details on how your operator is doing
@@ -118,7 +120,7 @@ Setup application namespace
 Apply applications with APM enabled - using Petclinic
 * Uses init container and connectivity to APM server
 ```bash
- kubectl apply -f petclinic_with_apm.yaml -n development
+ envsubst '$APM_JAVA' < java_app/petclinic_with_apm.yaml | kubectl apply -f - -n development
  kubectl apply -f petclinic_service.yaml -n development
 ```
 
@@ -131,9 +133,4 @@ minikube service petclinic -n development --url
 
 # TODO
 
-* Replace version with environment variable and then use this script to replace
-```bash
-# set $ESVERSION in file
-
-envsubst '$ELASTIC' < deployment.yaml | kubectl apply -f -
-```
+* add more service types

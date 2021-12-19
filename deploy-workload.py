@@ -1,6 +1,11 @@
 import os
 import sys
 import platform
+import config
+
+print ("Elastic JAVA APM Version: {}".format(config.version['APM_JAVA']))
+
+os.environ['APM_JAVA'] = config.version['APM_JAVA']
 
 
 # create development namespace
@@ -33,6 +38,6 @@ os.system("""kubectl get secret apm-server-sample-apm-token -n elk -o json | jq 
           )' | kubectl apply --namespace=development -f -""")
 
 # Deploy application
-os.system("kubectl apply -f java_app/petclinic_with_apm.yaml -n development")
+os.system("envsubst '$APM_JAVA' < java_app/petclinic_with_apm.yaml | kubectl apply -f - -n development")
 os.system("kubectl apply -f java_app/petclinic_service.yaml -n development")
 os.system("minikube service petclinic -n development --url")
