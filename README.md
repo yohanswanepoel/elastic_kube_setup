@@ -132,5 +132,5 @@ minikube service petclinic -n development --url
 
 
 # TODO
-
+* apply ILM templates for development purposes e.g. delete indeces after 2 days
 * add more service types
