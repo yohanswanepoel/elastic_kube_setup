@@ -24,6 +24,9 @@ spec:
                   kubernetes.container.image: "mongodb"
                 config:
                   - module: mongodb
+                    period: ${PERIOD}
+                    hosts: ["${data.kubernetes.pod.ip}:27017"]
+                    metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
       modules:
       - module: system
         period: 10s

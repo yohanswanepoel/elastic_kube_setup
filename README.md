@@ -14,12 +14,14 @@ python3 install-stack.py
 python3 setup-agents.py
 
 # deploy workload - to see some metrics/logs
-pythyn3 deploy-workload.py
+python3 deploy-workload.py
 
 # once running get access to Kibana
 python3 access-kibana.py
 
 ```
+
+* Some extra setup in Kibana is required to enable APM Integration
 
 ## Install the CRD
 * NB if you choose this path you have to set the environment variables as per the config.py file

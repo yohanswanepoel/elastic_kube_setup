@@ -1,5 +1,5 @@
 version=dict(
-    OPERATOR="1.9.1",
-    ELASTIC="7.16.2",
-    APM_JAVA="1.12.0",
+    OPERATOR="2.1.0",
+    ELASTIC="8.1.0",
+    APM_JAVA="1.29.0",
 )
