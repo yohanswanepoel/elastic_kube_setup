@@ -39,7 +39,8 @@ spec:
           name: elastic-apm-agent 
         env: 
         - name: ELASTIC_APM_SERVER_URL 
-          value: "http://apm-server-sample-apm-http.elk.svc:8200" 
+          #value: "http://apm-server-sample-apm-http.elk.svc:8200" 
+          value: "http://apm.elk.svc:8200"
         - name: ELASTIC_APM_SERVICE_NAME 
           value: "petclinic" 
         - name: ELASTIC_APM_APPLICATION_PACKAGES 
@@ -48,10 +49,10 @@ spec:
           value: development 
         - name: ELASTIC_APM_LOG_LEVEL 
           value: DEBUG 
-        - name: ELASTIC_APM_SECRET_TOKEN 
-          valueFrom: 
-            secretKeyRef: 
-              name: apm-server-sample-apm-token 
-              key: secret-token 
+        #- name: ELASTIC_APM_SECRET_TOKEN 
+        #  valueFrom: 
+        #    secretKeyRef: 
+        #      name: apm-server-sample-apm-token 
+        #      key: secret-token 
         - name: JAVA_TOOL_OPTIONS 
           value: -javaagent:/elastic/apm/agent/elastic-apm-agent.jar

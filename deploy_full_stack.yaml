@@ -21,20 +21,6 @@ spec:
               limits:
                 memory: 2Gi  
 ---
-apiVersion: apm.k8s.elastic.co/v1
-kind: ApmServer
-metadata:
-  name: apm-server-sample
-spec:
-  version: $ELASTIC
-  count: 1
-  elasticsearchRef:
-    name: "elasticsearch-sample"
-  http:
-    tls:
-      selfSignedCertificate:
-        disabled: true
----
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
@@ -44,4 +30,141 @@ spec:
   count: 1
   elasticsearchRef:
     name: "elasticsearch-sample"
-  
+  config:
+    xpack.fleet.agents.elasticsearch.hosts: ["https://elasticsearch-sample-es-http:9200"]
+    xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-sample-agent-http:8220"]
+    xpack.fleet.packages:
+      - name: system
+        version: latest
+      - name: elastic_agent
+        version: latest
+      - name: fleet_server
+        version: latest
+      - name: apm
+        version: latest
+    xpack.fleet.agentPolicies:
+      - name: Fleet Server on ECK policy
+        id: eck-fleet-server
+        is_default_fleet_server: true
+        namespace: elk
+        monitoring_enabled:
+          - logs
+          - metrics
+        package_policies:
+        - name: fleet_server-1
+          id: fleet_server-1
+          package:
+            name: fleet_server
+      - name: Elastic Agent on ECK policy
+        id: eck-agent
+        namespace: elk
+        monitoring_enabled:
+          - logs
+          - metrics
+        unenroll_timeout: 900
+        is_default: true
+        package_policies:
+          - name: system-1
+            id: system-1
+            package:
+              name: system  
+          - name: apm-1
+            package:
+              name: apm
+            inputs:
+            - type: apm
+              enabled: true
+              vars:
+              - name: host
+                value: 0.0.0.0:8200    
+---
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata:
+  name: fleet-server-sample
+spec:
+  version: $ELASTIC
+  kibanaRef:
+    name: kibana-sample
+  elasticsearchRefs:
+  - name: elasticsearch-sample
+  mode: fleet
+  fleetServerEnabled: true
+  deployment:
+    replicas: 1
+    podTemplate:
+      spec:
+        serviceAccountName: fleet-server
+        automountServiceAccountToken: true
+        securityContext:
+          runAsUser: 0
+---
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata: 
+  name: elastic-agent
+spec:
+  version: $ELASTIC
+  kibanaRef:
+    name: kibana-sample
+  fleetServerRef: 
+    name: fleet-server-sample
+  mode: fleet
+  deployment:
+    replicas: 1
+    podTemplate:
+      spec:
+        securityContext:
+          runAsUser: 0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apm
+spec:
+  selector:
+    agent.k8s.elastic.co/name: elastic-agent
+  ports:
+  - protocol: TCP
+    port: 8200
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fleet-server
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  - namespaces
+  - nodes
+  verbs:
+  - get
+  - watch
+  - list
+- apiGroups: ["coordination.k8s.io"]
+  resources:
+  - leases
+  verbs:
+  - get
+  - create
+  - update
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fleet-server
+  namespace: elk
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: fleet-server
+subjects:
+- kind: ServiceAccount
+  name: fleet-server
+  namespace: elk
+roleRef:
+  kind: ClusterRole
+  name: fleet-server
+  apiGroup: rbac.authorization.k8s.io
