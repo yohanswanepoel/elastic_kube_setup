@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Basic Elastic Cloud {% endblock %}</h1>
+    <div>
+    PODS
+    <hr>
+    <table>
+    {% for pod in pods %}
+    <tr>
+        <td>
+        <a href="/pod/{{ pod.pod_id }}">{{ pod.id }}</a><br>
+        </td>
+        <td>
+            {{ pod.containers }}
+        </td>
+        <td>
+            {{ pod.state }}
+        </td>
+        <td>
+            {{ pod.age }}
+        </td>
+        <td>
+            {{ pod.restarts }}
+        </td>
+    </tr>
+    {% endfor %}
+    </table>
+    </div>
+{% endblock %}

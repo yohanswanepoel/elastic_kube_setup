@@ -40,7 +40,7 @@ spec:
         env: 
         - name: ELASTIC_APM_SERVER_URL 
           #value: "http://apm-server-sample-apm-http.elk.svc:8200" 
-          value: "http://apm.elk.svc:8200"
+          value: "http://elastic-agent-agent-69cdb569db-fxj8c:8200"
         - name: ELASTIC_APM_SERVICE_NAME 
           value: "petclinic" 
         - name: ELASTIC_APM_APPLICATION_PACKAGES 
