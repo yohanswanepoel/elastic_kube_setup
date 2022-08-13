@@ -11,6 +11,8 @@ import re
 # export FLASK_ENV=development
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'your secret key'
+
 
 @app.route('/')
 def index():
@@ -21,7 +23,7 @@ def index():
         spaces.append(line.split(" ")[0])
     return render_template('index.html', namespaces = spaces)
 
-@app.route('/deploy')
+@app.route('/deploy', methods=('GET', 'POST'))
 def deploy():
     return render_template('deploy.html')
 

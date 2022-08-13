@@ -3,5 +3,24 @@
 {% block content %}
     <h1>{% block title %} Deploy an Elastic Cluster{% endblock %}</h1>
 
+    <form method="post">
+        <div class="form-group">
+            <label for="title">Namespace</label>
+            <input type="text" name="namespace"
+                   placeholder="namespace" class="form-control"
+                   value="{{ request.form['namespace'] }}"></input>
+        </div>
+    
+        <div class="form-group">
+            <label for="content">Version</label>
+            <input type="text" name="version"
+                   placeholder="version" class="form-control"
+                   value="{{ request.form['version'] }}"></input>
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
   
 {% endblock %}
