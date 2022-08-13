@@ -6,6 +6,10 @@ metadata:
   name: elasticsearch-sample
 spec:
   version: $ELASTIC
+  http:
+    service:
+      spec:
+        type: NodePort
   nodeSets:
   - name: default
     config:
@@ -27,6 +31,10 @@ metadata:
   name: kibana-sample
 spec:
   version: $ELASTIC
+  http:
+    service:
+      spec:
+        type: NodePort
   count: 1
   elasticsearchRef:
     name: "elasticsearch-sample"
