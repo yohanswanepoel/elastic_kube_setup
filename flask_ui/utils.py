@@ -7,11 +7,12 @@ import config
 import json
 
 def get_namespaces():
-    namespaces = os.popen("{kubectl} get namespace".format(kubectl = config.kubectl_command)).read()
+    cmd_output = os.popen("{kubectl} get namespace -o json".format(kubectl = config.kubectl_command)).read()
+    json_output = json.loads(cmd_output)
     spaces = []
-    lines = namespaces.split("\n")
-    for line in lines[1:]:
-        spaces.append(line.split(" ")[0])
+    for item in json_output["items"]:
+        if item["kind"] == "Namespace":
+            spaces.append(item["metadata"]["name"])
     return spaces
 
 def get_pods(namespace):
@@ -74,7 +75,6 @@ def get_services(namespace):
     return services
 
 def create_namespace(namespace):
-    # Do we need to clean up first
     output = os.popen("{kubectl} create namespace {namespace}".format(kubectl = config.kubectl_command, namespace = namespace)).read()
     return output
     
@@ -96,9 +96,15 @@ def check_elastic_exists(namespace):
     json_output = json.loads(cmd_output)
     return (len(json_output["items"]) > 0)
 
+def remove_namespace(namespace):
+    messages = []
+    messages.append(os.popen("{kubectl} delete namespace {namespace}".format(kubectl = config.kubectl_command, namespace=namespace)))
+    return messages
+
 def remove_stack(namespace):
     messages = []
     deployment_name = namespace.split("-")[1]
-    messages.append(os.popen("{kubectl} delete elastic --all".format(kubectl = config.kubectl_command)))
-    messages.append(os.popen("{kubectl} delete service apm-{deployment_name}".format(kubectl = config.kubectl_command, deployment_name=deployment_name)))
+    messages.append(os.popen("{kubectl} delete elastic --all -n {namespace}".format(kubectl = config.kubectl_command, namespace=namespace)))
+    messages.append(os.popen("{kubectl} delete service apm-{deployment_name} -n {namespace}".format(kubectl = config.kubectl_command, deployment_name=deployment_name, namespace=namespace)))
+    print(messages)
     return messages

@@ -24,6 +24,7 @@ def index():
 def deploy():
     errors = []
     messages = []
+    target_namespace = "null"
     if request.method == "POST":
         namespace = request.form["namespace"]
         if namespace.strip() == "":
@@ -38,10 +39,10 @@ def deploy():
                 if utils.check_elastic_exists(namespace):
                     print(utils.check_elastic_exists(namespace))
                     errors.append("Namespace already contains Elastic")
-                else:
-                    msg = utils.create_namespace(target_namespace)
-                    if msg.strip != 0:
-                        messages.append(msg)
+            else:
+                msg = utils.create_namespace(target_namespace)
+                if msg.strip != 0:
+                    messages.append(msg)
         if len(errors) == 0:
             # create the deployment
             msg = utils.deploy_full_stack(target_namespace, namespace, version)
@@ -49,7 +50,7 @@ def deploy():
                  messages.append(msg)
 
 
-    return render_template('deploy.html', versions =  config.versions, errors=errors, messages=messages)
+    return render_template('deploy.html', versions = config.versions, errors=errors, messages=messages, target_namespace = target_namespace)
 
 # kubectl get elastic
 # use name that is unique - then can filter easily 
@@ -70,3 +71,7 @@ def namespace(namespace):
     print(password)
     return render_template("namespace.html", pods = pods, services=services,  namespace = namespace, password = password)
 
+@app.route('/delete_namespace/<string:namespace>')
+def delete_namespace(namespace):
+    utils.remove_namespace(namespace)
+    return redirect(url_for("index"))

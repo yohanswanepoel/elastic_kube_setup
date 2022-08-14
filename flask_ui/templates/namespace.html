@@ -2,8 +2,10 @@
 
 {% block content %}
     <h1>{% block title %} Elastic Cluster: {{ namespace }} {% endblock %}</h1>
-    <div name="command bar">
-       <a href="">Refresh</a> - -  <a href="{{ url_for('remove_stack', namespace=namespace )}}">Remove Stack</a>
+    <div name="commandbar" class="content-fluid  justify-content-between align-items-center">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+       <a class="badge badge-success badge-pill" href="">Refresh</a> 
+       <a class="badge badge-danger badge-pill" href="{{ url_for('remove_stack', namespace=namespace )}}">Remove Stack</a>
     </div>
     <div id="message_container">
         {% for message in messages %}
