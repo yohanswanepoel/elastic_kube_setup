@@ -81,9 +81,10 @@ def deploy_full_stack(namespace, name, version):
     return output
 
 def check_elastic_exists(namespace):
-    output = os.popen("{kubectl} get elastic".format(kubectl = config.kubectl_command)).read()
-    return (output.strip() != "")
+    cmd_output = os.popen("{kubectl} get elastic -o json".format(kubectl = config.kubectl_command)).read()
+    json_output = json.loads(cmd_output)
+    return (len(json_output["items"]) > 0)
 
 def remove_stack(namespace):
-    output = os.popen("{kubectl} delete elastic --all".format(kubectl = config.kubectl_command))
-    return output
+    cmd_output = os.popen("{kubectl} delete elastic --all".format(kubectl = config.kubectl_command))
+    return cmd_output

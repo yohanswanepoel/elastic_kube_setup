@@ -60,7 +60,7 @@ def deploy():
 @app.route('/remove_stack/<string:namespace>')
 def remove_stack(namespace):
     result = utils.remove_stack(namespace)
-    return redirect(url("names_pace", namespace = namespace))
+    return redirect(url("namespace", namespace = namespace))
 
 @app.route('/namespace/<string:namespace>')
 def namespace(namespace):
