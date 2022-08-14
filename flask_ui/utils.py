@@ -4,6 +4,7 @@ import platform
 import config
 import re
 import config
+import json
 
 def get_namespaces():
     namespaces = os.popen("{kubectl} get namespace".format(kubectl = config.kubectl_command)).read()
@@ -14,29 +15,55 @@ def get_namespaces():
     return spaces
 
 def get_pods(namespace):
-    cmd_output = os.popen("{kubectl} get pods -n {namespace}".format(kubectl = config.kubectl_command, namespace=namespace)).read()
+    cmd_output = os.popen("{kubectl} get pods -n {namespace} -o json".format(kubectl = config.kubectl_command, namespace=namespace)).read()
+    json_output = json.loads(cmd_output)
     pods = []
-    lines = cmd_output.split("\n")
-    for line in lines[1:]:
-        
-        pod = {}
-        l_normal = re.sub(' +', ' ', line)
-        
-        line_split = l_normal.split(" ")
-        if len(line_split) > 4:
-            pod["id"] = line_split[0]
-            pod["containers"] = line_split[1]
-            pod["state"] = line_split[2]
-            pod["restarts"] = line_split[3]
-            pod["age"] = line_split[4]
-            pod["line"] = line
+    for item in json_output["items"]:
+        if item["kind"] == "Pod":
+            pod = {}
+            pod["id"] = item["metadata"]["name"]
+            pod["containers"] = []
+            for state in item["status"]["containerStatuses"]:
+                container = {}
+
+                container["name"] = state["name"]
+                container["image"] = state["image"]
+                container["state"] = state["state"]
+                
+                pod["containers"].append(container)
+            pod["state"] = item["status"]["phase"]
             pods.append(pod)
     return pods
 
 def get_services(namespace):
-    cmd_output = os.popen("{kubectl} get services -n {namespace}".format(kubectl = config.kubectl_command, namespace=namespace)).read()
-    lines = cmd_output.split("\n")
-    return lines
+    cmd_output = os.popen("{kubectl} get services -n {namespace} -o json".format(kubectl = config.kubectl_command, namespace=namespace)).read()
+    json_output = json.loads(cmd_output)
+    services = []
+    for item in json_output["items"]:
+        if item["kind"] == "Service":
+            service = {}
+            service["id"] = item["metadata"]["name"]
+            if "common.k8s.elastic.co/type" in item["spec"]["selector"]:
+                service["service_type"] = item["spec"]["selector"]["common.k8s.elastic.co/type"]
+            else:
+                service["service_type"] = ""
+            
+            if "agent.k8s.elastic.co/name" in item["spec"]["selector"]:
+                service["elastic_component"] = item["spec"]["selector"]["agent.k8s.elastic.co/name"]
+            else:
+                service["elastic_component"] = ""
+            service["type"] = item["spec"]["type"]
+             
+            service["internal_ip"] = item["spec"]["clusterIP"]
+            service["ports"] = item["spec"]["ports"]
+            if service["type"] == "NodePort":
+                if "name" in item["spec"]["ports"][0]:
+                    service["url"] = item["spec"]["ports"][0]["name"] + "://localhost:" + str(item["spec"]["ports"][0]["nodePort"])
+            else:
+                if "name" in item["spec"]["ports"][0]:
+                    service["url"] = "" #item["spec"]["ports"][0]["name"] + "://" + service["internal_ip"] + ":" + str(item["spec"]["ports"][0]["port"])
+            services.append(service)
+    return services
 
 def create_namespace(namespace):
     # Do we need to clean up first

@@ -57,10 +57,10 @@ def deploy():
 # Group elastic output and namespace output together on one page
 # kubectl describe elasticsearch elasticsearch-sample | grep -i namespace
 
-@app.route('/removestack/<string:namespace>')
+@app.route('/remove_stack/<string:namespace>')
 def remove_stack(namespace):
     result = utils.remove_stack(namespace)
-    return redirect(url("namespace"))
+    return redirect(url("names_pace", namespace = namespace))
 
 @app.route('/namespace/<string:namespace>')
 def namespace(namespace):

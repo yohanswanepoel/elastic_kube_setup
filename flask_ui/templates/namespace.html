@@ -3,42 +3,75 @@
 {% block content %}
     <h1>{% block title %} Basic Elastic Cloud {% endblock %}</h1>
     <div name="command bar">
-        <a href="{{ url_for('remove_stack', namespace=namespace )}}">Remove Stack</a>
+       <a href="">Refresh</a> - -  <a href="{{ url_for('remove_stack', namespace=namespace )}}">Remove Stack</a>
     </div>
     <div name="services">
     Services
     <hr>
-    <table>
+    <table class="table">
     {% for service in services %}
     <tr>
         <td>
-        {{ service }}
+        {{ service.id }}
         </td>
-        
+        <td>
+            {{ service.service_type }}
+        </td>
+        <td>
+            {{ service.elastic_component }}
+        </td>
+        <td>
+            {{ service.type }}
+        </td>
+        <td>
+            {{ service.internal_ip }}
+        </td>
+        <td>
+            <a href="{{ service.url }}">{{ service.url }}</a>
+        </td>
+        <td>
+                {% for port in service.ports %}
+                         {{ port.targetPort }}
+                        {{ port }}
+                {% endfor %}
+            
+        </td>
+
     </tr>
     {% endfor %}
     </table>
     </div>
     <div name="pods">
         PODS
-        <hr>
-        <table>
+        <table class="table">
         {% for pod in pods %}
         <tr>
             <td>
             <a href="/pod/{{ pod.pod_id }}">{{ pod.id }}</a><br>
             </td>
             <td>
-                {{ pod.containers }}
-            </td>
-            <td>
                 {{ pod.state }}
             </td>
             <td>
-                {{ pod.age }}
-            </td>
-            <td>
-                {{ pod.restarts }}
+                <div class="container">
+                <table class="table">
+                    
+                    {% for container in pod.containers %}
+                    <tr>
+                        <td>
+                            {{ container.name }}
+                        </td>
+                        <td>
+                            {{ container.image }}
+                        </td>
+                        <td>
+                            {{ container.state }}
+                        </td>
+                    
+                    </tr>
+                    {% endfor %}
+                </table>
+                </div>
             </td>
         </tr>
         {% endfor %}
