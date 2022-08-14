@@ -3,7 +3,9 @@
 {% block content %}
     <h1>{% block title %} Basic Elastic Cloud {% endblock %}</h1>
 
+    <div>
     {% for namespace in namespaces %}
-        <a href="/namespace/{{ namespace }}">{{ namespace }}</a><br>
+        <a href="{{ url_for('namespace', namespace = namespace) }}">{{ namespace }}</a><br>
     {% endfor %}
+    </div>
 {% endblock %}

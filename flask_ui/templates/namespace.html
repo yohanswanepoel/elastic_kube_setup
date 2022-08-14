@@ -2,29 +2,46 @@
 
 {% block content %}
     <h1>{% block title %} Basic Elastic Cloud {% endblock %}</h1>
-    <div>
-    PODS
+    <div name="command bar">
+        <a href="{{ url_for('remove_stack', namespace=namespace )}}">Remove Stack</a>
+    </div>
+    <div name="services">
+    Services
     <hr>
     <table>
-    {% for pod in pods %}
+    {% for service in services %}
     <tr>
         <td>
-        <a href="/pod/{{ pod.pod_id }}">{{ pod.id }}</a><br>
+        {{ service }}
         </td>
-        <td>
-            {{ pod.containers }}
-        </td>
-        <td>
-            {{ pod.state }}
-        </td>
-        <td>
-            {{ pod.age }}
-        </td>
-        <td>
-            {{ pod.restarts }}
-        </td>
+        
     </tr>
     {% endfor %}
     </table>
+    </div>
+    <div name="pods">
+        PODS
+        <hr>
+        <table>
+        {% for pod in pods %}
+        <tr>
+            <td>
+            <a href="/pod/{{ pod.pod_id }}">{{ pod.id }}</a><br>
+            </td>
+            <td>
+                {{ pod.containers }}
+            </td>
+            <td>
+                {{ pod.state }}
+            </td>
+            <td>
+                {{ pod.age }}
+            </td>
+            <td>
+                {{ pod.restarts }}
+            </td>
+        </tr>
+        {% endfor %}
+        </table>
     </div>
 {% endblock %}

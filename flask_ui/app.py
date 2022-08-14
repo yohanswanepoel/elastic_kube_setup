@@ -1,9 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 import os
 import sys
 import platform
 import config
 import re
+import utils
 
 
 # to run 
@@ -16,34 +17,54 @@ app.config['SECRET_KEY'] = 'your secret key'
 
 @app.route('/')
 def index():
-    namespaces = os.popen("{kubectl} get namespace".format(kubectl = config.kubectl_command)).read()
-    spaces = []
-    lines = namespaces.split("\n")
-    for line in lines[1:]:
-        spaces.append(line.split(" ")[0])
+    spaces = utils.get_namespaces()
     return render_template('index.html', namespaces = spaces)
 
 @app.route('/deploy', methods=('GET', 'POST'))
 def deploy():
-    return render_template('deploy.html')
+    errors = []
+    messages = []
+    if request.method == "POST":
+        namespace = request.form["namespace"]
+        if namespace.strip() == "":
+            errors.append("Namespace Required")
+        version = request.form["version"]
+        spaces = utils.get_namespaces()
+        target_namespace = "eck"+"-" + namespace.strip() + "-" + version.replace(".","")
+        # check if namespace and version is unique
+        for space in spaces:
+            if space == target_namespace:
+                # Namespace exists does it already have an elastic deployment
+                if utils.check_elastic_exists(namespace):
+                    print(utils.check_elastic_exists(namespace))
+                    errors.append("Namespace already contains Elastic")
+                else:
+                    msg = utils.create_namespace(target_namespace)
+                    if msg.strip != 0:
+                        messages.append(msg)
+        if len(errors) == 0:
+            # create the deployment
+            msg = utils.deploy_full_stack(target_namespace, namespace, version)
+            if msg.strip != 0:
+                 messages.append(msg)
+
+
+    return render_template('deploy.html', versions =  config.versions, errors=errors, messages=messages)
+
+# kubectl get elastic
+# use name that is unique - then can filter easily 
+# namespace should be elk-name
+# Group elastic output and namespace output together on one page
+# kubectl describe elasticsearch elasticsearch-sample | grep -i namespace
+
+@app.route('/removestack/<string:namespace>')
+def remove_stack(namespace):
+    result = utils.remove_stack(namespace)
+    return redirect(url("namespace"))
 
 @app.route('/namespace/<string:namespace>')
 def namespace(namespace):
-    cmd_output = os.popen("{kubectl} get pods -n {namespace}".format(kubectl = config.kubectl_command, namespace=namespace)).read()
-    pods = []
-    lines = cmd_output.split("\n")
-    for line in lines[1:]:
-        
-        pod = {}
-        l_normal = re.sub(' +', ' ', line)
-        
-        line_split = l_normal.split(" ")
-        if len(line_split) > 4:
-            pod["id"] = line_split[0]
-            pod["containers"] = line_split[1]
-            pod["state"] = line_split[2]
-            pod["restarts"] = line_split[3]
-            pod["age"] = line_split[4]
-            pod["line"] = line
-            pods.append(pod)
-    return render_template("namespace.html", pods = pods)
+    pods = utils.get_pods(namespace)
+    services = utils.get_services(namespace)
+    return render_template("namespace.html", pods = pods, services=services,  namespace = namespace)
+
