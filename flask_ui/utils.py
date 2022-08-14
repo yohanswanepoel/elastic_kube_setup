@@ -23,14 +23,26 @@ def get_pods(namespace):
             pod = {}
             pod["id"] = item["metadata"]["name"]
             pod["containers"] = []
-            for state in item["status"]["containerStatuses"]:
-                container = {}
-
-                container["name"] = state["name"]
-                container["image"] = state["image"]
-                container["state"] = state["state"]
-                
-                pod["containers"].append(container)
+            container = {}
+            if "containerStatuses" in item["status"]:
+                for state in item["status"]["containerStatuses"]:
+                    container["ready"] = state["ready"]
+                    container["name"] = state["name"]
+                    container["image"] = state["image"]
+                    if "running" in state["state"]:
+                        container["start_time"] = state["state"]["running"]["startedAt"]
+                    else:
+                        container["start_time"] = ""
+                    container["state"] = state["state"]
+                    
+                    
+            else:
+                container["ready"] = ""
+                container["name"] = ""
+                container["image"] = ""
+                container["start_time"] = ""
+                container["state"] = ""
+            pod["containers"].append(container)
             pod["state"] = item["status"]["phase"]
             pods.append(pod)
     return pods
@@ -47,11 +59,7 @@ def get_services(namespace):
                 service["service_type"] = item["spec"]["selector"]["common.k8s.elastic.co/type"]
             else:
                 service["service_type"] = ""
-            
-            if "agent.k8s.elastic.co/name" in item["spec"]["selector"]:
-                service["elastic_component"] = item["spec"]["selector"]["agent.k8s.elastic.co/name"]
-            else:
-                service["elastic_component"] = ""
+        
             service["type"] = item["spec"]["type"]
              
             service["internal_ip"] = item["spec"]["clusterIP"]
@@ -70,13 +78,16 @@ def create_namespace(namespace):
     output = os.popen("{kubectl} create namespace {namespace}".format(kubectl = config.kubectl_command, namespace = namespace)).read()
     return output
     
+def get_elastic_password(namespace):
+    deployment_name = namespace.split("-")[1]
+    password = os.popen("{kubectl} get secret elasticsearch-{deployment_name}-es-elastic-user -o=jsonpath='{{.data.elastic}}' -n {namespace} | base64 --decode".format(kubectl = config.kubectl_command, deployment_name=deployment_name, namespace=namespace)).read()
+    return password
 
 def deploy_full_stack(namespace, name, version):
     os.environ['ELASTIC'] = version
     os.environ['ECK_DEPLOYMENT_NAME'] = name
     os.environ['ECK_NAMESPACE'] = namespace
     yaml = os.popen("envsubst '$ELASTIC,$ECK_DEPLOYMENT_NAME,$ECK_NAMESPACE' < ./operator_templates/deploy_full_stack.yaml").read()
-    print(yaml)
     output = os.popen("envsubst '$ELASTIC,$ECK_DEPLOYMENT_NAME,$ECK_NAMESPACE' < operator_templates/deploy_full_stack.yaml | {kubectl} apply -f - -n {namespace}".format(kubectl = config.kubectl_command, namespace = namespace)).read()
     return output
 
@@ -86,5 +97,8 @@ def check_elastic_exists(namespace):
     return (len(json_output["items"]) > 0)
 
 def remove_stack(namespace):
-    cmd_output = os.popen("{kubectl} delete elastic --all".format(kubectl = config.kubectl_command))
-    return cmd_output
+    messages = []
+    deployment_name = namespace.split("-")[1]
+    messages.append(os.popen("{kubectl} delete elastic --all".format(kubectl = config.kubectl_command)))
+    messages.append(os.popen("{kubectl} delete service apm-{deployment_name}".format(kubectl = config.kubectl_command, deployment_name=deployment_name)))
+    return messages

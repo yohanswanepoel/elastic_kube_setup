@@ -8,6 +8,11 @@
         {{ error }}<br>
     </div>
     {% endfor %}
+    {% if messages|length > 0 %}
+    <div class="alert alert-primary" >
+        Check your deployment {{ url_for("namespace", {{ request.form['namespace'] }}) }}<br>
+    </div>
+    {% endif %}
     {% for message in messages %}
     <div class="alert alert-primary" >
         {{ message }}<br>

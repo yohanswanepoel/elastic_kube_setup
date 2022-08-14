@@ -128,10 +128,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: apm
+  name: apm-$ECK_DEPLOYMENT_NAME
 spec:
   selector:
-    agent.k8s.elastic.co/name: elastic-agent
+    common.k8s.elastic.co/type: elastic-agent
+    common.k8s.elastic.co/type: agent
   ports:
   - protocol: TCP
     port: 8200

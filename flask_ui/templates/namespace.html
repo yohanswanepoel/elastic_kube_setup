@@ -1,14 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} Basic Elastic Cloud {% endblock %}</h1>
+    <h1>{% block title %} Elastic Cluster: {{ namespace }} {% endblock %}</h1>
     <div name="command bar">
        <a href="">Refresh</a> - -  <a href="{{ url_for('remove_stack', namespace=namespace )}}">Remove Stack</a>
     </div>
+    <div id="message_container">
+        {% for message in messages %}
+        <div class="alert alert-primary" >
+            {{ message }}<br>
+        </div>
+        {% endfor %}
+        </div>
+    <div name="elastic_user">
+        <h2>Elastic User Details</h2>
+        <div class="card">
+            <div class="card-header"><b>User: </b>elastic</div>
+            <div class="card-header"><b>Password: </b>{{ password }}</div>
+        </div>
+    </div>
     <div name="services">
-    Services
+    <h2>Services</h2>
     <hr>
     <table class="table">
+        <thead class="thead-light">
+            <tr>
+            <td>
+                Service Name
+            </td>
+            <td>
+                Type
+            </td>
+            <td>
+                Service Type
+            </td>
+            <td>
+                Internal IP
+            </td>
+            <td>
+                External URL
+            </td>
+            <td>
+                 Port Details
+            </td>
+        </tr>
+        </thead>
+        <tbody class="table-striped">
     {% for service in services %}
     <tr>
         <td>
@@ -16,9 +53,6 @@
         </td>
         <td>
             {{ service.service_type }}
-        </td>
-        <td>
-            {{ service.elastic_component }}
         </td>
         <td>
             {{ service.type }}
@@ -39,42 +73,61 @@
 
     </tr>
     {% endfor %}
+        </tbody>
     </table>
     </div>
     <div name="pods">
-        PODS
-        <table class="table">
+        <h2>PODS</h2>
         {% for pod in pods %}
-        <tr>
-            <td>
-            <a href="/pod/{{ pod.pod_id }}">{{ pod.id }}</a><br>
-            </td>
-            <td>
-                {{ pod.state }}
-            </td>
-            <td>
-                <div class="container">
+        <div class="card"> 
+            <div class="card-header">
+            {{ pod.state }}
+            <a href="/pod/{{ pod.pod_id }}">{{ pod.id }}</a>
+            </div>
+                <div class="card-body">
                 <table class="table">
-                    
+                    <thead>
+                        <td>
+                            Ready
+                        </td>
+                        <td>
+                            Start Time
+                        </td>
+                        <td>
+                            Name
+                        </td>
+                        <td>
+                            Status
+                        </td>
+                        <td>
+                            Image
+                        </td>
+                    </thead>
                     {% for container in pod.containers %}
                     <tr>
+                        <td>
+                            {{ container.ready }}
+                        </td>
+                        <td>
+                            {{ container.start_time }}
+                        </td>
                         <td>
                             {{ container.name }}
                         </td>
                         <td>
-                            {{ container.image }}
-                        </td>
-                        <td>
                             {{ container.state }}
                         </td>
-                    
+                        <td>
+                            {{ container.image }}
+                        </td>
                     </tr>
                     {% endfor %}
                 </table>
                 </div>
-            </td>
-        </tr>
+           
+    </div>
         {% endfor %}
-        </table>
+
+        
     </div>
 {% endblock %}

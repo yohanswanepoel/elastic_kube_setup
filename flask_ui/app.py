@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 import os
 import sys
 import platform
@@ -60,11 +60,13 @@ def deploy():
 @app.route('/remove_stack/<string:namespace>')
 def remove_stack(namespace):
     result = utils.remove_stack(namespace)
-    return redirect(url("namespace", namespace = namespace))
+    return redirect(url_for("namespace", namespace = namespace))
 
 @app.route('/namespace/<string:namespace>')
 def namespace(namespace):
     pods = utils.get_pods(namespace)
     services = utils.get_services(namespace)
-    return render_template("namespace.html", pods = pods, services=services,  namespace = namespace)
+    password = utils.get_elastic_password(namespace)
+    print(password)
+    return render_template("namespace.html", pods = pods, services=services,  namespace = namespace, password = password)
 
