@@ -46,11 +46,10 @@ def deploy():
         namespace = form.namespace.data
         version = form.version.data 
         spaces = utils.get_namespaces()
-        target_namespace = "eck"+"-" + namespace.strip() + "-" + version.replace(".","") 
+        target_namespace = "eck"+"-" + namespace.strip()
         flash("Target Namespace: " + target_namespace)
         if target_namespace in spaces:
             if utils.check_elastic_exists(namespace):
-                print(utils.check_elastic_exists(namespace))
                 errors.append("Namespace already contains Elastic")
             else:
                 flash("Deploying Elastic")

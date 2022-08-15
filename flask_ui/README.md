@@ -31,3 +31,9 @@ addons:
     registry             # (core) Private image registry exposed on localhost:32000
     storage              # (core) Alias to hostpath-storage add-on, deprecated
 ```
+
+## Todo
+* Show version number in name space
+* Show upgrade option if later version exists
+* Add more config parameters
+* Flexible template
