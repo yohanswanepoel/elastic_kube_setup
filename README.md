@@ -1,5 +1,10 @@
 # TLDR: Setting up a full Elastic Stack 
 
+There are two options:
+* Flask based UI - work is happening here
+* commandline (not actively maintained)
+
+Operator information:
 https://operatorhub.io/operator/elastic-cloud-eck#:~:text=Elastic%20Cloud%20on%20Kubernetes%20(ECK,Elastic%20Maps%20Server%20on%20Kubernetes.
 
 
@@ -7,10 +12,14 @@ https://operatorhub.io/operator/elastic-cloud-eck#:~:text=Elastic%20Cloud%20on%2
 
 Set you configuration in config.py
 * if using microk8s enable storage and dns
-
 * Follow this read me or run the pythong commands
 * use the config.py command to setup the environment variables
 * Resources are setup in the *elk* namespace, to make it easy to clean things up.
+* See README.md in flask_ui folder
+
+
+
+## For command line
 ```
 # install the stack and expose kibana port
 python3 install-stack.py
