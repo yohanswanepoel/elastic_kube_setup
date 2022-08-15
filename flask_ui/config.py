@@ -6,11 +6,11 @@ version=dict(
 
 operator_versions = ["2.3.0","2.2.0"]
 
-kubectl_command = "kubectl"
-#kubectl_command = "microk8s.kubectl"
+#kubectl_command = "kubectl"
+kubectl_command = "microk8s.kubectl"
 
-local_cluster = "minikube"
-#local_cluster = "microk8s"
+#local_cluster = "minikube"
+local_cluster = "microk8s"
 
 #namespace
 namespace = "elk"

@@ -68,6 +68,9 @@ def get_services(namespace):
             host_access = "localhost"
             if config.local_cluster == "minikube":
                 host_access = os.popen("minikube ip").read()
+            if config.local_cluster == "microk8s":
+                host_output = os.popen("microk8s.kubectl describe node $(microk8s.kubectl get nodes --no-headers | cut -f 1 -d " ") | grep InternalIP").read()
+                host_access = host_output.split(":")[1].strip()
             if service["type"] == "NodePort":
                 if "name" in item["spec"]["ports"][0]:
                     service["url"] = item["spec"]["ports"][0]["name"] + "://" + host_access + ":" + str(item["spec"]["ports"][0]["nodePort"])
