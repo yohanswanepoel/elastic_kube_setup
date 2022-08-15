@@ -6,9 +6,8 @@
 pip install -r requirements.txt
 
 export FLASK_APP=app
-export FLASK_ENV=development
 
-flask run
+flask --debug run
 ```
 
 * access on : http://localhost:5000
