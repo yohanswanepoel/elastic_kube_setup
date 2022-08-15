@@ -168,3 +168,17 @@ roleRef:
   kind: ClusterRole
   name: fleet-server
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1 
+kind: Service 
+metadata: 
+  name: apm-external 
+spec:
+  selector:
+    agent.k8s.elastic.co/name: elastic-agent
+  type: NodePort 
+  ports:
+  - protocol: TCP
+    port: 8200 
+    targetPort: 8200 
+    nodePort: 32002

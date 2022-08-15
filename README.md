@@ -99,11 +99,16 @@ kubectl describe beats/filebeat
 Based on blog from Eyal Koren - https://www.elastic.co/blog/using-elastic-apm-java-agent-on-kubernetes-k8s
 
 Setup application namespace
+* Get APM endpoint - or foward APM port 
 * Create namespace
 * Create secret in the application namespace 
 ```bash
 
-   kubectl create namespace development
+  minikube service apm-external -n elk --url
+
+  kubectl port-forward service/apm 8200
+
+  kubectl create namespace development
 
   kubectl get secret apm-server-sample-apm-token -n elk -o json | jq --sort-keys \
             'del(

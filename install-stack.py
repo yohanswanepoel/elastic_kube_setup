@@ -20,5 +20,4 @@ os.system("kubectl apply -f https://download.elastic.co/downloads/eck/{}/operato
 # Install Elastic Stack - Search, Kibana, APM
 os.system("envsubst '$ELASTIC' < deploy_full_stack.yaml | kubectl apply -f - -n elk")
 
-
-
+os.system("minikube service apm-external -n elk --url")
