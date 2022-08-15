@@ -65,9 +65,12 @@ def get_services(namespace):
              
             service["internal_ip"] = item["spec"]["clusterIP"]
             service["ports"] = item["spec"]["ports"]
+            host_access = "localhost"
+            if config.local_cluster == "minikube":
+                host_access = os.popen("minikube ip").read()
             if service["type"] == "NodePort":
                 if "name" in item["spec"]["ports"][0]:
-                    service["url"] = item["spec"]["ports"][0]["name"] + "://localhost:" + str(item["spec"]["ports"][0]["nodePort"])
+                    service["url"] = item["spec"]["ports"][0]["name"] + "://" + host_access + ":" + str(item["spec"]["ports"][0]["nodePort"])
             else:
                 if "name" in item["spec"]["ports"][0]:
                     service["url"] = "" #item["spec"]["ports"][0]["name"] + "://" + service["internal_ip"] + ":" + str(item["spec"]["ports"][0]["port"])
@@ -106,5 +109,10 @@ def remove_stack(namespace):
     deployment_name = namespace.split("-")[1]
     messages.append(os.popen("{kubectl} delete elastic --all -n {namespace}".format(kubectl = config.kubectl_command, namespace=namespace)))
     messages.append(os.popen("{kubectl} delete service apm-{deployment_name} -n {namespace}".format(kubectl = config.kubectl_command, deployment_name=deployment_name, namespace=namespace)))
-    print(messages)
+    return messages
+
+def install_operator(version):
+    messages = []
+    messages.append(os.system("{kubectl} create -f https://download.elastic.co/downloads/eck/{operator}/crds.yaml".format(kubectl = config.kubectl_command, operator = version)))
+    messages.append(os.system("{kubectl} apply -f https://download.elastic.co/downloads/eck/{operator}/operator.yaml".format(kubectl = config.kubectl_command, operator = version)))
     return messages

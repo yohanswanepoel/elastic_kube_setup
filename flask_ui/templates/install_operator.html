@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Deploy an Elastic Cluster{% endblock %}</h1>
+    <div id="message_container">
+    {% for error in errors %}
+    <div class="alert alert-danger" >
+        {{ error }}
+    </div>
+    {% endfor %}
+    {% for message in messages %}
+    <div class="alert alert-primary" >
+        {{ message }}
+    </div>
+    {% endfor %}
+    </div>
+    <form method="post">
+    
+        <div class="form-group">
+            <label for="content">Version</label>
+            <select id="version" name="version" class="form-control">
+                {% for version in versions %}
+                <option value="{{ version }}" {% if version==request.form['version'] %} selected="selected"{% endif %}>{{ version }}</option>
+                {% endfor %}
+            </select>
+            
+        </div>
+        
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+  
+{% endblock %}

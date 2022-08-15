@@ -14,6 +14,11 @@ flask run
 * access on : http://localhost:5000
 
 
+## Tested on
+* microk8s on Linux (PopOS/Ubuntu)
+* minikube on Mac
+* microk8s on Mac
+
 ## If using microk8s enable
 ```
 addons:

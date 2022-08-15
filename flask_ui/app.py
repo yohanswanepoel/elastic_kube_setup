@@ -20,6 +20,17 @@ def index():
     spaces = utils.get_namespaces()
     return render_template('index.html', namespaces = spaces)
 
+@app.route("/install_operator", methods=('GET', 'POST'))
+def install_operator():
+    errors = []
+    messages = []
+    if request.method == "POST":
+        version = request.form["version"]
+        if version == "":
+            errors.append("Please select a version")
+        messages.append(utils.install_operator(version))
+    return render_template('install_operator.html', errors=errors, messages=messages, versions = config.operator_versions)
+
 @app.route('/deploy', methods=('GET', 'POST'))
 def deploy():
     errors = []
