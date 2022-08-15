@@ -100,13 +100,24 @@ def deploy_full_stack(namespace, name, version):
     return output
 
 def check_elastic_exists(namespace):
-    cmd_output = os.popen("{kubectl} get elastic -o json".format(kubectl = config["kubectl_command"])).read()
+    cmd_output = os.popen("{kubectl} get elastic -n {namespace} -o json".format(kubectl = config["kubectl_command"], namespace=namespace)).read()
     json_output = json.loads(cmd_output)
     return (len(json_output["items"]) > 0)
 
+def get_elastic_version(namespace):
+    version = ""
+    cmd_output = os.popen("{kubectl} get elastic -n {namespace}  -o json".format(kubectl = config["kubectl_command"], namespace=namespace)).read()
+    json_output = json.loads(cmd_output)
+    if json_output["items"] == 0:
+        return ""
+    for item in json_output["items"]:
+        version = item["spec"]["version"]
+        return version
+    return version
+
 def remove_namespace(namespace):
     messages = []
-    messages.append(os.popen("{kubectl} delete namespace {namespace}".format(kubectl = config["kubectl_command"], namespace=namespace)))
+    messages.append(os.popen("{kubectl} delete namespace {namespace}".format(kubectl = config["kubectl_command"], namespace=namespace)).read())
     return messages
 
 def remove_stack(namespace):

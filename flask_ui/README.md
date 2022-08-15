@@ -37,3 +37,4 @@ addons:
 * Show upgrade option if later version exists
 * Add more config parameters
 * Flexible template
+* Add upgrade operator
