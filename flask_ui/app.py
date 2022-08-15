@@ -80,7 +80,6 @@ def namespace(namespace):
     pods = utils.get_pods(namespace)
     services = utils.get_services(namespace)
     password = utils.get_elastic_password(namespace)
-    print(password)
     return render_template("namespace.html", pods = pods, services=services,  namespace = namespace, password = password)
 
 @app.route('/delete_namespace/<string:namespace>')

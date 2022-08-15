@@ -127,7 +127,6 @@ def get_config():
     if not bool(config):
         with open('config.json') as config_file:
             config = json.load(config_file)
-            print(config)
     return config
 
 def save_config(config):
