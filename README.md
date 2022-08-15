@@ -3,6 +3,9 @@
 https://operatorhub.io/operator/elastic-cloud-eck#:~:text=Elastic%20Cloud%20on%20Kubernetes%20(ECK,Elastic%20Maps%20Server%20on%20Kubernetes.
 
 
+Set you configuration in config.py
+* if using microk8s enable storage and dns
+
 * Follow this read me or run the pythong commands
 * use the config.py command to setup the environment variables
 * Resources are setup in the *elk* namespace, to make it easy to clean things up.
@@ -141,3 +144,4 @@ minikube service petclinic -n development --url
 # TODO
 * apply ILM templates for development purposes e.g. delete indeces after 2 days
 * add more service types
+* confgure agent to work

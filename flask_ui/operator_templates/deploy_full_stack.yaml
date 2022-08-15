@@ -3,7 +3,7 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: elasticsearch-sample
+  name: elasticsearch-$ECK_DEPLOYMENT_NAME
 spec:
   version: $ELASTIC
   http:
@@ -28,7 +28,7 @@ spec:
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: kibana-sample
+  name: kibana-$ECK_DEPLOYMENT_NAME
 spec:
   version: $ELASTIC
   http:
@@ -37,10 +37,10 @@ spec:
         type: NodePort
   count: 1
   elasticsearchRef:
-    name: "elasticsearch-sample"
+    name: "elasticsearch-$ECK_DEPLOYMENT_NAME"
   config:
-    xpack.fleet.agents.elasticsearch.hosts: ["https://elasticsearch-sample-es-http:9200"]
-    xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-sample-agent-http:8220"]
+    xpack.fleet.agents.elasticsearch.hosts: ["https://elasticsearch-$ECK_DEPLOYMENT_NAME-es-http:9200"]
+    xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-$ECK_DEPLOYMENT_NAME-agent-http:8220"]
     xpack.fleet.packages:
       - name: system
         version: latest
@@ -54,7 +54,7 @@ spec:
       - name: Fleet Server on ECK policy
         id: eck-fleet-server
         is_default_fleet_server: true
-        namespace: elk
+        namespace: fleet
         monitoring_enabled:
           - logs
           - metrics
@@ -65,7 +65,7 @@ spec:
             name: fleet_server
       - name: Elastic Agent on ECK policy
         id: eck-agent
-        namespace: elk
+        namespace: development
         monitoring_enabled:
           - logs
           - metrics
@@ -89,13 +89,13 @@ spec:
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
-  name: fleet-server-sample
+  name: fleet-server-$ECK_DEPLOYMENT_NAME
 spec:
   version: $ELASTIC
   kibanaRef:
-    name: kibana-sample
+    name: kibana-$ECK_DEPLOYMENT_NAME
   elasticsearchRefs:
-  - name: elasticsearch-sample
+  - name: elasticsearch-$ECK_DEPLOYMENT_NAME
   mode: fleet
   fleetServerEnabled: true
   deployment:
@@ -110,13 +110,13 @@ spec:
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata: 
-  name: elastic-agent
+  name: elastic-agent-$ECK_DEPLOYMENT_NAME
 spec:
   version: $ELASTIC
   kibanaRef:
-    name: kibana-sample
+    name: kibana-$ECK_DEPLOYMENT_NAME
   fleetServerRef: 
-    name: fleet-server-sample
+    name: fleet-server-$ECK_DEPLOYMENT_NAME
   mode: fleet
   deployment:
     replicas: 1
@@ -128,10 +128,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: apm
+  name: apm-$ECK_DEPLOYMENT_NAME
 spec:
   selector:
-    agent.k8s.elastic.co/name: elastic-agent
+    common.k8s.elastic.co/type: elastic-agent
+    common.k8s.elastic.co/type: agent
   ports:
   - protocol: TCP
     port: 8200
@@ -162,7 +163,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: fleet-server
-  namespace: elk
+  namespace: $ECK_NAMESPACE
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -171,22 +172,8 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: fleet-server
-  namespace: elk
+  namespace: $ECK_NAMESPACE
 roleRef:
   kind: ClusterRole
   name: fleet-server
   apiGroup: rbac.authorization.k8s.io
----
-apiVersion: v1 
-kind: Service 
-metadata: 
-  name: apm-external 
-spec:
-  selector:
-    agent.k8s.elastic.co/name: elastic-agent
-  type: NodePort 
-  ports:
-  - protocol: TCP
-    port: 8200 
-    targetPort: 8200 
-    nodePort: 32002

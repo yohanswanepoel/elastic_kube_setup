@@ -10,3 +10,5 @@ kubectl_command = "microk8s.kubectl"
 #namespace
 namespace = "elk"
 dev_namespace = "development"
+
+versions = ["7.17.1","8.3.3","8.4.0"]
