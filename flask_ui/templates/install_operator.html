@@ -1,34 +1,25 @@
 {% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block content %}
     <h1>{% block title %} Deploy an Elastic Cluster{% endblock %}</h1>
-    <div id="message_container">
-    {% for error in errors %}
-    <div class="alert alert-danger" >
-        {{ error }}
-    </div>
-    {% endfor %}
-    {% for message in messages %}
-    <div class="alert alert-primary" >
-        {{ message }}
-    </div>
-    {% endfor %}
-    </div>
-    <form method="post">
-    
-        <div class="form-group">
-            <label for="content">Version</label>
-            <select id="version" name="version" class="form-control">
-                {% for version in versions %}
-                <option value="{{ version }}" {% if version==request.form['version'] %} selected="selected"{% endif %}>{{ version }}</option>
-                {% endfor %}
-            </select>
-            
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-primary" >
+            {{ message }}<br>
         </div>
-        
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">Submit</button>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    {% if errors|length > 0 %}
+        {% for message in errors %}
+        <div class="alert alert-danger" >
+            {{ message }}<br>
         </div>
-    </form>
+        {% endfor %}
+    {% endif %}
+   
+    {{ wtf.quick_form(form) }}
   
 {% endblock %}

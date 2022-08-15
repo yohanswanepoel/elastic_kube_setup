@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% import "bootstrap/wtf.html" as wtf %}
-
 {% block content %}
     <h1>{% block title %} Deploy an Elastic Cluster{% endblock %}</h1>
+    
     {% with messages = get_flashed_messages() %}
     {% if messages %}
         {% for message in messages %}
@@ -12,13 +12,6 @@
         {% endfor %}
     {% endif %}
     {% endwith %}
-    {% if errors|length > 0 %}
-        {% for message in errors %}
-        <div class="alert alert-danger" >
-            {{ message }}<br>
-        </div>
-        {% endfor %}
-    {% endif %}
    
    
     {{ wtf.quick_form(form) }}
