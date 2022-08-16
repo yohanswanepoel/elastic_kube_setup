@@ -152,7 +152,6 @@ def save_config(config):
 def kubectl_exists():
     try:
         output = subprocess.getstatusoutput("{kubectl}".format(kubectl=config["kubectl_command"]))
-        print(output)
         if output[0] != 0:
             return False
     except subprocess.Check as e:
@@ -164,7 +163,6 @@ def cluster_running():
     if config["local_cluster"] == "microk8s":
         try:
             output = subprocess.getstatusoutput("{local_cluster} status --format yaml".format(local_cluster=config["local_cluster"]))
-            print(output[0])
             if output[0] != 0:
                 return False
             status = yaml.load(output[1], Loader=yaml.Loader)
@@ -175,7 +173,6 @@ def cluster_running():
     if config["local_cluster"] == "minikube":
         try:
             output = subprocess.getstatusoutput("{local_cluster} status -o json".format(local_cluster=config["local_cluster"]))
-            print(output)
             if output[0] != 0:
                 return False
             json_output = json.loads(output[1])
