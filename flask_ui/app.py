@@ -23,11 +23,13 @@ config = utils.get_config()
 def index():
     global config
     errors = []
-    if utils.cluster_running():
-        spaces = utils.get_namespaces()
-    else:
+    if not utils.kubectl_exists():
+        errors.append("Kubectl command not valid")
+        spaces = []
+    if not utils.cluster_running():
         errors.append("Cluster may not be running or cluster type incorrect. Please configure k8s")
         spaces = []
+    spaces = utils.get_namespaces()
     return render_template('index.html', namespaces = spaces, errors=errors)
 
 @app.route("/install_operator", methods=('GET', 'POST'))

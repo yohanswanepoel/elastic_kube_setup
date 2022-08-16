@@ -12,6 +12,8 @@ config = {}
 def get_namespaces():
     if not kubectl_exists():
         return []
+    if not cluster_running():
+        return []
     cmd_output = os.popen("{kubectl} get namespace -o json".format(kubectl = config["kubectl_command"])).read()
     json_output = json.loads(cmd_output)
     spaces = []
@@ -150,6 +152,9 @@ def save_config(config):
 def kubectl_exists():
     try:
         output = subprocess.getstatusoutput("{kubectl}".format(kubectl=config["kubectl_command"]))
+        print(output)
+        if output[0] != 0:
+            return False
     except subprocess.Check as e:
         return False
         
@@ -163,7 +168,7 @@ def cluster_running():
             if output[0] != 0:
                 return False
             status = yaml.load(output[1], Loader=yaml.Loader)
-            print(status["microk8s"]["running"])
+            #print(status["microk8s"]["running"])
             return True
         except subprocess.Check as e:
             return False
@@ -173,9 +178,10 @@ def cluster_running():
             print(output)
             if output[0] != 0:
                 return False
-            #json_output = json.loads(output[1])
-            #print(status["microk8s"]["running"])
-            return True
+            json_output = json.loads(output[1])
+
+            if json_output["APIServer"] == "Running":
+                return True
         except subprocess.Check as e:
             return False
 
