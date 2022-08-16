@@ -101,7 +101,7 @@ def deploy_full_stack(namespace, name, version):
     os.environ['ECK_DEPLOYMENT_NAME'] = name
     os.environ['ECK_NAMESPACE'] = namespace
     yaml = os.popen("envsubst '$ELASTIC,$ECK_DEPLOYMENT_NAME,$ECK_NAMESPACE' < ./operator_templates/deploy_full_stack.yaml").read()
-    output = os.popen("envsubst '$ELASTIC,$ECK_DEPLOYMENT_NAME,$ECK_NAMESPACE' < operator_templates/deploy_full_stack.yaml | {kubectl} apply -f - -n {namespace}".format(kubectl = config["kubectl_command"], namespace = namespace)).read()
+    output = os.popen("envsubst '$ELASTIC,$ECK_DEPLOYMENT_NAME,$ECK_NAMESPACE' < operator_templates/deploy_full_stack_{version}.yaml | {kubectl} apply -f - -n {namespace}".format(kubectl = config["kubectl_command"], namespace = namespace, version=version)).read()
     return output
 
 def check_elastic_exists(namespace):
