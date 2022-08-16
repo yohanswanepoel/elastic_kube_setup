@@ -1,14 +1,17 @@
-import os
+import os, subprocess
 import sys
 import platform
 import config
 import re
 import config
 import json
+import yaml
 
 config = {}
 
 def get_namespaces():
+    if not kubectl_exists():
+        return []
     cmd_output = os.popen("{kubectl} get namespace -o json".format(kubectl = config["kubectl_command"])).read()
     json_output = json.loads(cmd_output)
     spaces = []
@@ -143,3 +146,37 @@ def get_config():
 def save_config(config):
     with open('config.json', 'w') as f:
         json.dump(config, f)
+
+def kubectl_exists():
+    try:
+        output = subprocess.getstatusoutput("{kubectl}".format(kubectl=config["kubectl_command"]))
+    except subprocess.Check as e:
+        return False
+        
+    return True
+
+def cluster_running():
+    if config["local_cluster"] == "microk8s":
+        try:
+            output = subprocess.getstatusoutput("{local_cluster} status --format yaml".format(local_cluster=config["local_cluster"]))
+            print(output[0])
+            if output[0] != 0:
+                return False
+            status = yaml.load(output[1], Loader=yaml.Loader)
+            print(status["microk8s"]["running"])
+            return True
+        except subprocess.Check as e:
+            return False
+    if config["local_cluster"] == "minikube":
+        try:
+            output = subprocess.getstatusoutput("{local_cluster} status -o json".format(local_cluster=config["local_cluster"]))
+            print(output)
+            if output[0] != 0:
+                return False
+            #json_output = json.loads(output[1])
+            #print(status["microk8s"]["running"])
+            return True
+        except subprocess.Check as e:
+            return False
+
+    return True

@@ -22,8 +22,13 @@ config = utils.get_config()
 @app.route('/')
 def index():
     global config
-    spaces = utils.get_namespaces()
-    return render_template('index.html', namespaces = spaces)
+    errors = []
+    if utils.cluster_running():
+        spaces = utils.get_namespaces()
+    else:
+        errors.append("Cluster may not be running or cluster type incorrect. Please configure k8s")
+        spaces = []
+    return render_template('index.html', namespaces = spaces, errors=errors)
 
 @app.route("/install_operator", methods=('GET', 'POST'))
 def install_operator():

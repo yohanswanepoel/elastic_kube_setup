@@ -13,6 +13,13 @@
             {{ message }}<br>
         </div>
         {% endfor %}
+        {% if errors|length > 0 %}
+            {% for message in errors %}
+            <div class="alert alert-danger" >
+                {{ message }}<br>
+            </div>
+            {% endfor %}
+        {% endif %}
     </div>
     <div name="elastic_user">
         <h2>Elastic User Details</h2>
