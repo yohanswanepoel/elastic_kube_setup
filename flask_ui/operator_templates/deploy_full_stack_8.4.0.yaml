@@ -118,8 +118,7 @@ spec:
   fleetServerRef: 
     name: fleet-server-$ECK_DEPLOYMENT_NAME
   mode: fleet
-  deployment:
-    replicas: 1
+  daemonSet:
     podTemplate:
       spec:
         serviceAccountName: fleet-server
