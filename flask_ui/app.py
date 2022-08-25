@@ -16,6 +16,7 @@ from flask_bootstrap import Bootstrap
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your secret key'
 bootstrap = Bootstrap(app)
+errors = []
 
 config = utils.get_config()
 
@@ -98,13 +99,25 @@ def delete_namespace(namespace):
     utils.remove_namespace(namespace)
     return redirect(url_for("index"))
 
+@app.route('/install_state_metrics')
+def install_state_metrics():
+    global config
+    global errors
+    errors = utils.install_state_metrics()
+    if len(errors) == 0:
+        flash("State Metrics Enabled")
+    return redirect(url_for("set_config"))
+    
+
 @app.route('/set_config', methods=('GET', 'POST'))
 def set_config():
     global config
+    global errors
     form = ConfigForm()
     form.kubectl_command.choices = [(c, c) for c in config["kubectl_list"]]
     form.local_cluster.choices = [(c, c) for c in config["cluster_types"]]
     if form.validate_on_submit():
+        errors = []
         config["kubectl_command"] = form.kubectl_command.data
         config["local_cluster"] = form.local_cluster.data
         utils.save_config(config)
@@ -112,4 +125,7 @@ def set_config():
     form.kubectl_command.data = config["kubectl_command"]
     form.local_cluster.data = config["local_cluster"]
     
-    return render_template("set_config.html", form=form)
+    return render_template("set_config.html", form=form, errors = errors)
+
+# TODO 
+# GET operator logs: kubectl -n elastic-system logs -f statefulset.apps/elastic-operator

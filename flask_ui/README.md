@@ -32,6 +32,14 @@ addons:
     storage              # (core) Alias to hostpath-storage add-on, deprecated
 ```
 
+```bash
+microk8s enable community
+microk8s enable dns
+microk8s enable hostpath-storage
+microk8s enable storage
+microk8s enable metrics-server
+```
+
 ## Todo
 * Show version number in name space
 * Show upgrade option if later version exists

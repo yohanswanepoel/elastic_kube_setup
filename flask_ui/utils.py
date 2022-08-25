@@ -138,6 +138,20 @@ def install_operator(version):
     messages.append(os.system("{kubectl} apply -f https://download.elastic.co/downloads/eck/{operator}/operator.yaml".format(kubectl = config["kubectl_command"], operator = version)))
     return messages
 
+def install_state_metrics():
+    errors = []
+    output = subprocess.getstatusoutput("rm -rf kube-state-metrics")
+    output = subprocess.getstatusoutput("git clone https://github.com/kubernetes/kube-state-metrics.git kube-state-metrics")
+    if output[0] != 0:
+        errors.append(output[1])
+    output = subprocess.getstatusoutput("{kubectl} create -f kube-state-metrics/examples/standard".format(kubectl=config["kubectl_command"]))
+    if output[0] != 0:
+        errors.append(output[1])
+    output = subprocess.getstatusoutput("rm -rf kube-state-metrics")
+    if output[0] != 0:
+        errors.append(output[1])
+    return errors
+
 def get_config():
     global config
     if not bool(config):
