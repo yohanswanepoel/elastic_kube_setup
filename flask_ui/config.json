@@ -1,1 +1,30 @@
-{"version": {"OPERATOR": "2.3.0", "ELASTIC": "8.3.3", "APM_JAVA": "1.29.0"}, "operator_versions": ["2.3.0", "2.2.0"], "kubectl_list": ["kubectl", "microk8s.kubectl"], "kubectl_command": "kubectl", "cluster_types": ["minikube", "microk8s"], "local_cluster": "minikube", "namespace": "elk", "dev_namespace": "development", "versions": ["7.17.1", "8.3.3", "8.4.0"]}
+{
+    "version": {
+        "OPERATOR": "2.3.0",
+        "ELASTIC": "8.3.3",
+        "APM_JAVA": "1.29.0"
+    },
+    "operator_versions": [
+        "2.4.0",
+        "2.3.0",
+        "2.2.0"
+    ],
+    "kubectl_list": [
+        "kubectl",
+        "microk8s.kubectl"
+    ],
+    "kubectl_command": "kubectl",
+    "cluster_types": [
+        "minikube",
+        "microk8s"
+    ],
+    "local_cluster": "minikube",
+    "namespace": "elk",
+    "dev_namespace": "development",
+    "versions": [
+        "7.16.0",
+        "7.17.5",
+        "8.3.3",
+        "8.4.0"
+    ]
+}
