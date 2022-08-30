@@ -6,6 +6,10 @@ metadata:
   name: elasticsearch-$ECK_DEPLOYMENT_NAME
 spec:
   version: $ELASTIC
+  http:
+    service:
+      spec:
+        type: NodePort
   nodeSets:
   - name: default
     config:
@@ -41,6 +45,10 @@ metadata:
   name: kibana-$ECK_DEPLOYMENT_NAME
 spec:
   version: $ELASTIC
+  http:
+    service:
+      spec:
+        type: NodePort
   count: 1
   elasticsearchRef:
     name: "elasticsearch-$ECK_DEPLOYMENT_NAME"
