@@ -27,6 +27,13 @@ spec:
                     period: ${PERIOD}
                     hosts: ["${data.kubernetes.pod.ip}:27017"]
                     metricsets: ["dbstats", "status", "collstats", "metrics", "replstatus"]
+            - condition:
+                contains:
+                  kubernetes.container.image: postgresql
+                config:
+                  - module: postgresql
+                    period: ${PERIOD}
+                    hosts: ["${data.kubernetes.pod.ip}:5432"]
       modules:
       - module: system
         period: 10s
