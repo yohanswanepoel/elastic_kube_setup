@@ -4,7 +4,7 @@ version=dict(
     APM_JAVA="1.29.0",
 )
 
-operator_versions = ["2.3.0","2.2.0"]
+operator_versions = ["2.4.0","2.3.0","2.2.0"]
 
 #kubectl_command = "kubectl"
 kubectl_command = "microk8s.kubectl"
@@ -16,4 +16,4 @@ local_cluster = "microk8s"
 namespace = "elk"
 dev_namespace = "development"
 
-versions = ["7.17.5","8.3.3","8.4.0"]
+versions = ["7.16.0","8.3.3","8.4.0"]
