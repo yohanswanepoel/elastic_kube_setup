@@ -16,4 +16,4 @@ local_cluster = "microk8s"
 namespace = "elk"
 dev_namespace = "development"
 
-versions = ["7.16.0","8.3.3","8.4.0"]
+versions = ["7.16.0","8.3.3","8.4.0","8.4.2"]
